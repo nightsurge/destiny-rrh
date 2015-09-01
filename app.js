@@ -9,8 +9,6 @@ var options = {
   }
 };
 
-app.set('port', (process.env.PORT || 3002));
-
 app.get('/', function (req, res) {
   res.send('Hello World!');
 });
@@ -32,7 +30,7 @@ app.get('/guardian/:gamertag/grimoire', function (req, res) {
   });
 });
 
-var server = app.listen(3002, function () {
+var server = app.listen(process.env.PORT || 3002, function () {
   var host = server.address().address;
   var port = server.address().port;
 
