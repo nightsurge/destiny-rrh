@@ -33,7 +33,8 @@ app.get('/guardian/:gamertag/grimoire', function (req, res) {
       var grimoireScore = JSON.parse(response.body).Response.data.score;
       slack.api('chat.postMessage', {
         text: "Your score is: "+grimoireScore,
-        channel:'#destiny'
+        channel:'#nightsurgex2',
+        as_user: true
       }, function(err, response){
         console.log(response);
       });
