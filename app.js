@@ -60,7 +60,18 @@ slack.on('message', function(message) {
         .filter(function(u) { return u.id != user.id; })
         .map(function(u) { return makeMention(u.id); });
 
-    channel.send(onlineUsers.join(', ') + '\r\n' + user.real_name + 'said: ' + trimmedMessage);
+    if (trimmedMessage.indexOf('grimoire') >= 0){
+      var gamertag = trimmedMessage.substring(trimmedMessage.indexOf('[')+1,trimmedMessage.indexOf(']'));
+      request.get(options.url+'/SearchDestinyPlayer/1/'+gamertag, function(error, response, body){
+        var membershipId = JSON.parse(response.body).Response[0].membershipId;
+        request.get(options.url+'/Vanguard/Grimoire/1/'+membershipId, function(error, response, body){
+          var grimoireScore = JSON.parse(response.body).Response.data.score;
+          channel.send(gamertag + "\'s grimoire score is: "+grimoireScore);
+        });
+      });
+    } else {
+      channel.send(onlineUsers.join(', ') + '\r\n' + user.real_name + ' said: "' + trimmedMessage + '" and I\'m too dumb to handle that.');
+    }
   }
 });
 
@@ -77,27 +88,6 @@ var options = {
 
 app.get('/', function (req, res) {
   res.send('Hello World!');
-});
-
-app.post('/slackbot', function (req, res){
-  console.log('Incoming request: \n');
-  console.log(req);
-  var membershipId = '';
-  request.get(options.url+'/SearchDestinyPlayer/1/'+'nightsurgex2', function(error, response, body){
-    membershipId = JSON.parse(response.body).Response[0].membershipId;
-    request.get(options.url+'/Vanguard/Grimoire/1/'+membershipId, function(error, response, body){
-      var grimoireScore = JSON.parse(response.body).Response.data.score;
-      // slack.api('chat.postMessage', {
-      //   text: "Your score is: "+grimoireScore,
-      //   channel:'#test',
-      //   as_user: false,
-      //   username: 'destiny-bot'
-      // }, function(sl_err, sl_resp){
-      //   console.log(sl_resp);
-      // });
-      res.send("Your score is: "+grimoireScore);
-    });
-  });
 });
 
 app.get('/guardian/:gamertag', function (req, res) {
