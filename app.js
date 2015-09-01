@@ -35,7 +35,8 @@ app.all('/guardian/:gamertag/grimoire', function (req, res) {
       slack.api('chat.postMessage', {
         text: "Your score is: "+grimoireScore,
         channel:'@nightsurgex2',
-        as_user: true
+        as_user: false,
+        username: 'destiny-bot'
       }, function(sl_err, sl_resp){
         console.log(sl_resp);
       });
