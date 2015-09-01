@@ -21,7 +21,7 @@ var getOnlineHumansForChannel = function(channel) {
   if (!channel) return [];
 
   return (channel.members || [])
-      .map(function(id) { return slack.users[id]; }
+      .map(function(id) { return slack.users[id]; })
       .filter(function(u) { return !!u && !u.is_bot && u.presence === 'active'; });
 };
 
