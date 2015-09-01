@@ -55,7 +55,7 @@ slack.on('message', function(message) {
   var user = slack.getUserByID(message.user);
 
   if (message.type === 'message' && isDirect(slack.self.id, message.text)) {
-    var trimmedMessage = message.text.substr(makeMention(slack.self.id).length).trim();
+    var trimmedMessage = message.text.substr(makeMention(slack.self.id).length).replace(':','').trim();
     var onlineUsers = getOnlineHumansForChannel(channel)
         .filter(function(u) { return u.id != user.id; })
         .map(function(u) { return makeMention(u.id); });
@@ -70,7 +70,7 @@ slack.on('message', function(message) {
         });
       });
     } else {
-      channel.send(onlineUsers.join(', ') + '\r\n' + user.real_name + ' said: "' + trimmedMessage + '" and I\'m too dumb to handle that.');
+      channel.send(user.real_name + ' said: "' + trimmedMessage + '" and I\'m too dumb to handle that.');
     }
   }
 });
