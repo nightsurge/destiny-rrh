@@ -9,6 +9,8 @@ var options = {
   }
 };
 
+app.set('port', (process.env.PORT || 3002));
+
 app.get('/', function (req, res) {
   res.send('Hello World!');
 });
