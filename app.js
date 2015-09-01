@@ -21,38 +21,40 @@ app.get('/', function (req, res) {
 app.post('/slackbot', function (req, res){
   console.log('Incoming request: \n');
   console.log(req);
-  var membershipId = findDestinyMemberId('nightsurgex2');
-  var grimoireScore = findDestinyGrimoire(membershipId);
-  slack.api('chat.postMessage', {
-    text: "Your score is: "+grimoireScore,
-    channel:'#test',
-    as_user: false,
-    username: 'destiny-bot'
-  }, function(sl_err, sl_resp){
-    console.log(sl_resp);
+  var membershipId = '';
+  request.get(options.url+'/SearchDestinyPlayer/1/'+'nightsurgex2', function(error, response, body){
+    membershipId = JSON.parse(response.body).Response[0].membershipId;
+    request.get(options.url+'/Vanguard/Grimoire/1/'+membershipId, function(error, response, body){
+      var grimoireScore = JSON.parse(response.body).Response.data.score;
+      slack.api('chat.postMessage', {
+        text: "Your score is: "+grimoireScore,
+        channel:'#test',
+        as_user: false,
+        username: 'destiny-bot'
+      }, function(sl_err, sl_resp){
+        console.log(sl_resp);
+      });
+      res.send("Your score is: "+grimoireScore);
+    });
   });
 });
 
 app.get('/guardian/:gamertag', function (req, res) {
-  res.send(findDestinyMemberId(req.params.gamertag));
+  request.get(options.url+'/SearchDestinyPlayer/1/'+req.params.gamertag, function(error, response, body){
+    res.send(JSON.parse(response.body));
+  });
 });
 
 app.get('/guardian/:gamertag/grimoire', function (req, res) {
-  var membershipId = findDestinyMemberId(req.params.gamertag);
-  res.send(findDestinyGrimoire(membershipId));
+  var membershipId = '';
+  request.get(options.url+'/SearchDestinyPlayer/1/'+req.params.gamertag, function(error, response, body){
+    membershipId = JSON.parse(response.body).Response[0].membershipId;
+    request.get(options.url+'/Vanguard/Grimoire/1/'+membershipId, function(error, response, body){
+      var grimoireScore = JSON.parse(response.body).Response.data.score;
+      res.send("Your score is: "+grimoireScore);
+    });
+  });
 });
-
-function findDestinyMemberId(gamertag){
-  request.get(options.url+'/SearchDestinyPlayer/1/'+gamertag, function(error, response, body){
-    return JSON.parse(response.body).Response[0].membershipId;
-  });
-}
-
-function findDestinyGrimoire(membershipId){
-  request.get(options.url+'/Vanguard/Grimoire/1/'+membershipId, function(error, response, body){
-    return JSON.parse(response.body).Response.data.score;
-  });
-}
 
 var server = app.listen(process.env.PORT || 3002, function () {
   var host = server.address().address;
