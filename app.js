@@ -87,14 +87,14 @@ app.post('/slackbot', function (req, res){
     membershipId = JSON.parse(response.body).Response[0].membershipId;
     request.get(options.url+'/Vanguard/Grimoire/1/'+membershipId, function(error, response, body){
       var grimoireScore = JSON.parse(response.body).Response.data.score;
-      slack.api('chat.postMessage', {
-        text: "Your score is: "+grimoireScore,
-        channel:'#test',
-        as_user: false,
-        username: 'destiny-bot'
-      }, function(sl_err, sl_resp){
-        console.log(sl_resp);
-      });
+      // slack.api('chat.postMessage', {
+      //   text: "Your score is: "+grimoireScore,
+      //   channel:'#test',
+      //   as_user: false,
+      //   username: 'destiny-bot'
+      // }, function(sl_err, sl_resp){
+      //   console.log(sl_resp);
+      // });
       res.send("Your score is: "+grimoireScore);
     });
   });
