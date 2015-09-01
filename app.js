@@ -24,7 +24,7 @@ app.get('/guardian/:gamertag', function (req, res) {
   });
 });
 
-app.get('/guardian/:gamertag/grimoire', function (req, res) {
+app.all('/guardian/:gamertag/grimoire', function (req, res) {
   console.log('Incoming request: \n');
   console.log(req);
   var membershipId = '';
