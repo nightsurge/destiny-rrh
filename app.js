@@ -20,7 +20,7 @@ app.get('/', function (req, res) {
 
 app.post('/slackbot', function (req, res){
   console.log('Incoming request: \n');
-  console.log(req.params);
+  console.log(req);
   var membershipId = findDestinyMemberId('nightsurgex2');
   var grimoireScore = findDestinyGrimoire(membershipId);
   slack.api('chat.postMessage', {
@@ -38,13 +38,13 @@ app.get('/guardian/:gamertag', function (req, res) {
 });
 
 app.get('/guardian/:gamertag/grimoire', function (req, res) {
-  var membershipId = findDestinyMemberId(req.params.gamertag).Response[0].membershipId;
+  var membershipId = findDestinyMemberId(req.params.gamertag);
   res.send(findDestinyGrimoire(membershipId));
 });
 
 function findDestinyMemberId(gamertag){
   request.get(options.url+'/SearchDestinyPlayer/1/'+gamertag, function(error, response, body){
-    return JSON.parse(response.body);
+    return JSON.parse(response.body).Response[0].membershipId;
   });
 }
 
