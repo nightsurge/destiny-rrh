@@ -25,7 +25,7 @@ app.get('/guardian/:gamertag', function (req, res) {
 });
 
 app.get('/guardian/:gamertag/grimoire', function (req, res) {
-  console.log(req);
+  console.log('Incoming request: \n'+req);
   var membershipId = '';
   request.get(options.url+'/SearchDestinyPlayer/1/'+req.params.gamertag, function(error, response, body){
     membershipId = JSON.parse(response.body).Response[0].membershipId;
@@ -33,7 +33,7 @@ app.get('/guardian/:gamertag/grimoire', function (req, res) {
       var grimoireScore = JSON.parse(response.body).Response.data.score;
       slack.api('chat.postMessage', {
         text: "Your score is: "+grimoireScore,
-        channel:'#nightsurgex2',
+        channel:'@nightsurgex2',
         as_user: true
       }, function(err, response){
         console.log(response);
