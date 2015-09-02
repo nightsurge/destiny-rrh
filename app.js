@@ -87,7 +87,7 @@ var parseSlackMessage = function(trimmedMessage, channel, user){
           //   });
           // });
           break;
-        else
+        default:
           channel.send(user.real_name + ' said, "' + trimmedMessage + '" and I\'m too dumb to handle that.');
           break;
       }
