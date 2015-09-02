@@ -39,7 +39,7 @@ var getOnlineHumansForChannel = function(channel) {
 var parseSlackMessage = function(trimmedMessage, channel, user){
   var keywords = ["help","characters","grimoire","inventory"];
   var finalMessage = '';
-  keywords.each(function(key){
+  keywords.forEach(function(key){
     if (trimmedMessage.indexOf(key) >= 0){
       switch(key){
         case 'help':
