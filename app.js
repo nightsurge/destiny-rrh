@@ -55,7 +55,7 @@ var parseSlackMessage = function(trimmedMessage, channel, user){
               var characters = JSON.parse(response.body).Response.data.characters.map( function(k){
                 return {
                   id: k.characterBase.characterId,
-                  type: guardianClasses[k.characterBase.classHash],
+                  classType: guardianClasses[k.characterBase.classHash],
                   level: k.characterLevel,
                   emblem: 'http://www.bungie.net/'+k.emblemPath,
                   background: 'http://www.bungie.net/'+k.backgroundPath};
