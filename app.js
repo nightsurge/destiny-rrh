@@ -43,9 +43,9 @@ var parseSlackMessage = function(trimmedMessage, channel, user){
     if (trimmedMessage.indexOf(key) >= 0){
       switch(key){
         case 'help':
-          channel.send(user.real_name + ', what would you like to know? I can currently assist you with:\n1. Grimoire score\n2. Inventory list\n\n'+
+          channel.send(user.real_name + ', what would you like to know? I can currently assist you with:\n1. Character list\n2. Grimoire score\n3. Inventory list (soon)\n\n'+
             'Make a call using a keyword and the gamertag in brackets.\nExample: What\'s [NightSurgeX2]\'s grimoire score? (grimoire is the keyword)\n'+
-            'Example Response: NightSurgeX2\'s grimoire score is 2450\n\nKeywords: ["grimoire","inventory"]');
+            'Example Response: NightSurgeX2\'s grimoire score is 2450\n\nKeywords: ["characters","grimoire","inventory"]');
           break;
         case 'characters':
           var gamertag = getGamertag(trimmedMessage);
@@ -60,7 +60,7 @@ var parseSlackMessage = function(trimmedMessage, channel, user){
                   emblem: 'http://www.bungie.net/'+k.emblemPath,
                   background: 'http://www.bungie.net/'+k.backgroundPath};
               } );
-              channel.send(gamertag + "\'s characters are: " + characters);
+              channel.send(gamertag + "\'s characters are: " + JSON.stringify(characters));
             });
           });
           break;
