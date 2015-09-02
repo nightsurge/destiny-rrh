@@ -11,7 +11,7 @@ var options = {
     'X-API-Key': '607f90a5823649b0b3781df292ae5181'
   }
 };
-var guardianClasses = [{'671679327': 'Hunter'},{'2271682572': 'Warlock'},{'3655393761': 'Titan'}];
+var guardianClasses = {'671679327': 'Hunter','2271682572': 'Warlock','3655393761': 'Titan'};
 
 var makeMention = function(userId) {
   return '<@' + userId + '>';
