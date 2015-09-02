@@ -5,9 +5,20 @@ var app = express();
 var token = 'xoxb-10023260468-Ye69IQtL8pCJNlSOJGbUysKa';
 var slack = new Slack(token, true, true);
 var slackIncomingToken = 'YCQTpcBsvWVdoUXgvMKlWz48';
+var options = {
+  url: 'http://www.bungie.net/Platform/Destiny',
+  headers: {
+    'X-API-Key': '607f90a5823649b0b3781df292ae5181'
+  }
+};
+var guardianClasses = [{'671679327': 'Hunter'},{'2271682572': 'Warlock'},{'3655393761': 'Titan'}];
 
 var makeMention = function(userId) {
   return '<@' + userId + '>';
+};
+
+var getGamertag = function(text) {
+  return text.substring(text.indexOf('[')+1,text.indexOf(']'));
 };
 
 var isDirect = function(userId, messageText) {
@@ -23,6 +34,65 @@ var getOnlineHumansForChannel = function(channel) {
   return (channel.members || [])
       .map(function(id) { return slack.users[id]; })
       .filter(function(u) { return !!u && !u.is_bot && u.presence === 'active'; });
+};
+
+var parseSlackMessage = function(trimmedMessage, channel, user){
+  var keywords = ["help","characters","grimoire","inventory"];
+  var finalMessage = '';
+  keywords.each(function(key){
+    if (trimmedMessage.indexOf(key) >= 0){
+      switch(key){
+        case 'help':
+          channel.send(user.real_name + ', what would you like to know? I can currently assist you with:\n1. Grimoire score\n2. Inventory list\n\n'+
+            'Make a call using a keyword and the gamertag in brackets.\nExample: What\'s [NightSurgeX2]\'s grimoire score? (grimoire is the keyword)\n'+
+            'Example Response: NightSurgeX2\'s grimoire score is 2450\n\nKeywords: ["grimoire","inventory"]');
+          break;
+        case 'characters':
+          var gamertag = getGamertag(trimmedMessage);
+          request.get(options.url+'/SearchDestinyPlayer/1/'+gamertag, function(error, response, body){
+            var membershipId = JSON.parse(response.body).Response[0].membershipId;
+            request.get(options.url+'/1/Account/'+membershipId+'/Summary', function(error, response, body){
+              var characters = JSON.parse(response.body).Response.data.characters.map( function(k){
+                return {
+                  id: k.characterBase.characterId,
+                  type: guardianClasses[k.characterBase.classHash],
+                  level: k.characterLevel,
+                  emblem: 'http://www.bungie.net/'+k.emblemPath,
+                  background: 'http://www.bungie.net/'+k.backgroundPath};
+              } );
+              channel.send(gamertag + "\'s characters are: " + characters);
+            });
+          });
+          break;
+        case 'grimoire':
+          var gamertag = getGamertag(trimmedMessage);
+          request.get(options.url+'/SearchDestinyPlayer/1/'+gamertag, function(error, response, body){
+            var membershipId = JSON.parse(response.body).Response[0].membershipId;
+            request.get(options.url+'/Vanguard/Grimoire/1/'+membershipId, function(error, response, body){
+              var grimoireScore = JSON.parse(response.body).Response.data.score;
+              channel.send(gamertag + "\'s grimoire score is: " + grimoireScore);
+            });
+          });
+          break;
+        case 'inventory':
+          channel.send('Inventory is still a work in progress.');
+          // var gamertag = getGamertag(trimmedMessage);
+          // request.get(options.url+'/SearchDestinyPlayer/1/'+gamertag, function(error, response, body){
+          //   var membershipId = JSON.parse(response.body).Response[0].membershipId;
+          //   request.get(options.url+'/1/Account/'+membershipId+'/Summary', function(error, response, body){
+          //     var characters = JSON.parse(response.body).Response.data.characters.map( function(k){
+          //       return {id: k.characterBase.characterId, emblem: 'http://www.bungie.net/'+k.emblemPath, background: 'http://www.bungie.net/'+k.backgroundPath};
+          //     } );
+          //     channel.send(gamertag + "\'s grimoire score is: "+grimoireScore);
+          //   });
+          // });
+          break;
+        else
+          channel.send(user.real_name + ' said, "' + trimmedMessage + '" and I\'m too dumb to handle that.');
+          break;
+      }
+    }
+  });
 };
 
 slack.on('open', function () {
@@ -60,32 +130,14 @@ slack.on('message', function(message) {
         .filter(function(u) { return u.id != user.id; })
         .map(function(u) { return makeMention(u.id); });
 
-    if (trimmedMessage.indexOf('grimoire') >= 0){
-      var gamertag = trimmedMessage.substring(trimmedMessage.indexOf('[')+1,trimmedMessage.indexOf(']'));
-      request.get(options.url+'/SearchDestinyPlayer/1/'+gamertag, function(error, response, body){
-        var membershipId = JSON.parse(response.body).Response[0].membershipId;
-        request.get(options.url+'/Vanguard/Grimoire/1/'+membershipId, function(error, response, body){
-          var grimoireScore = JSON.parse(response.body).Response.data.score;
-          channel.send(gamertag + "\'s grimoire score is: "+grimoireScore);
-        });
-      });
-    } else {
-      channel.send(user.real_name + ' said: "' + trimmedMessage + '" and I\'m too dumb to handle that.');
-    }
+    parseSlackMessage(trimmedMessage, channel, user);
   }
 });
 
 slack.login();
+
 //-------------------------------------------------------------------
-
-
-var options = {
-  url: 'http://www.bungie.net/Platform/Destiny',
-  headers: {
-    'X-API-Key': '607f90a5823649b0b3781df292ae5181'
-  }
-};
-
+//-------------------------------------------------------------------
 app.get('/', function (req, res) {
   res.send('Hello World!');
 });
