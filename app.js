@@ -7,7 +7,7 @@ var redis = require("redis");
 var url = require('url');
 var redisURL = url.parse(process.env.REDISCLOUD_URL);
 var redisClient = redis.createClient(redisURL.port, redisURL.hostname, {no_ready_check: true});
-redisClient.auth(redisURL.auth.split(":")[1]);
+// redisClient.auth(redisURL.auth.split(":")[1]);
 
 // slack
 var Slack = require('slack-client');
@@ -51,16 +51,16 @@ var getOnlineHumansForChannel = function(channel) {
 };
 
 var parseSlackMessage = function(trimmedMessage, channel, user){
-  var keywords = ["help","characters","grimoire","inventory","destiny code"];
+  var keywords = ["help","characters","grimoire","inventory","destiny code","has han"];
   var somethingWorked = false;
   keywords.forEach(function(key){
-    if (trimmedMessage.indexOf(key) >= 0){
+    if (trimmedMessage.toLowerCase().indexOf(key) >= 0){
       somethingWorked = true;
       switch(key){
         case 'help':
           channel.send(user.real_name + ', what would you like to know? I can currently assist you with:\n1. Character list\n2. Grimoire score\n3. Inventory list (soon)\n\n'+
             'Make a call using a keyword and the gamertag in brackets.\nExample: What\'s [NightSurgeX2]\'s grimoire score? (grimoire is the keyword)\n'+
-            'Example Response: NightSurgeX2\'s grimoire score is 2450\n\nKeywords: ["characters","grimoire","inventory"]');
+            'Example Response: NightSurgeX2\'s grimoire score is 2450\n\nKeywords: ["characters","grimoire","destiny code","has han","inventory"]');
           break;
         case 'characters':
           var gamertag = getGamertag(trimmedMessage);
@@ -102,7 +102,14 @@ var parseSlackMessage = function(trimmedMessage, channel, user){
           //   });
           // });
           break;
-
+        case 'has han':
+          getMembershipIdByGamertag('Vermillion33', function(result){
+            var hanPlayed = 'Unfortunatley, no, Han has not graced Destiny with his presence.';
+            if (JSON.parse(result).Response.length){
+              hanPlayed = 'By the beard of Zeus (or Pocket Dave)! Han has finally played Destiny. Let us dance! http://xboxdvr.com/gamer/Tufo/video/8494678#t=9';
+            }
+            channel.send(hasPlayed);
+          break;
         case 'destiny code':
           var codes = [];
           var numbers = ["3", "4", "7","3", "4", "7","3", "4", "7"];
@@ -172,7 +179,7 @@ slack.login();
 var getMembershipIdByGamertag = function(gamertag, callback){
   var membershipId;
   redisClient.get("membership_id_"+gamertag, function (err, reply) {
-    console.log("Error: "+ err + "\nReply: "+ reply);
+    // console.log("Error: "+ err + "\nReply: "+ reply);
     if (reply){
       membershipId = reply.toString();
     }
@@ -180,8 +187,8 @@ var getMembershipIdByGamertag = function(gamertag, callback){
       request.get(options.url+'/SearchDestinyPlayer/1/'+gamertag, function(error, response, body){
         membershipId = JSON.parse(response.body);
         redisClient.set("membership_id_"+gamertag, JSON.stringify(membershipId), function(err, reply){
-          console.log("Error: "+ err + "\nReply: "+ reply);
-          callback(reply.toString());
+          // console.log("Error: "+ err + "\nReply: "+ reply);
+          callback(membershipId);
         });
       });
     } else {
