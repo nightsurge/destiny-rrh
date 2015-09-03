@@ -174,7 +174,9 @@ var getMembershipIdByGamertag = function(gamertag){
   async.series([
     function() {
       redisClient.get("membership_id_"+gamertag, function (err, reply) {
-        membershipId = reply.toString();
+        if (reply){
+          membershipId = reply.toString();
+        }
       });
     },
     function() {
