@@ -95,12 +95,12 @@ var parseSlackMessage = function(trimmedMessage, channel, user){
           var codes = [];
           var numbers = ["3", "4", "7","3", "4", "7","3", "4", "7"];
           var letters = ["X", "C", "K", "F", "H", "L"];
-          for(var i=0; i<2; i++){
+          for(var i=0; i<3; i++){
             var quest = letters.sample(2).concat(numbers.sample(6));
             shuffle(quest);
             codes.push(quest.join(""));
           }
-          channel.send('Did someone say Destiny Codes?! Here\'s 3 for FREE: '+ codes);
+          channel.send('Did someone say Destiny Codes?! Here\'s 3 for FREE: '+ codes.join("\n"));
           break;
         default:
           channel.send(user.real_name + ' said, "' + trimmedMessage + '" and I\'m too dumb to handle that.');
