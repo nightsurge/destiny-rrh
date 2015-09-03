@@ -1,6 +1,8 @@
 var express = require('express');
 var request = require('request');
 var async = require('async');
+var redis = require("redis"),
+    redisClient = redis.createClient();
 var Slack = require('slack-client');
 var shuffle = require('shuffle-array');
 Array.prototype.sample = require('array-sample');
@@ -159,9 +161,23 @@ slack.login();
 //-------------------------------------------------------------------
 //-------------------------------------------------------------------
 var getMembershipIdByGamertag = function(gamertag){
-  request.get(options.url+'/SearchDestinyPlayer/1/'+gamertag, function(error, response, body){
-    return JSON.parse(response.body);
-  });
+  var membershipId;
+  async.series([
+    function() {
+      redisClient.get("membership_id_"+gamertag, function (err, reply) {
+        membershipId = reply.toString();
+      });
+    },
+    function() {
+      if(!!membershipId){
+        return membershipId;
+      } else {
+        request.get(options.url+'/SearchDestinyPlayer/1/'+gamertag, function(error, response, body){
+          return JSON.parse(response.body);
+        });
+      }
+    }
+  ]);
 };
 
 app.get('/', function (req, res) {
@@ -169,11 +185,22 @@ app.get('/', function (req, res) {
 });
 
 app.get('/guardian/:gamertag', function (req, res) {
-  res.send(getMembershipIdByGamertag(req.params.gamertag));
+  var membershipId;
+  async.series([
+    function(){
+      membershipId = getMembershipIdByGamertag(req.params.gamertag);
+    },
+    function(){
+      res.send(membershipId);
+    }
+  ]);
 });
 
 app.get('/guardian/:gamertag/grimoire', function (req, res) {
   var membershipId = '';
+  async.series([
+
+  ]);
   request.get(options.url+'/SearchDestinyPlayer/1/'+req.params.gamertag, function(error, response, body){
     membershipId = JSON.parse(response.body).Response[0].membershipId;
     request.get(options.url+'/Vanguard/Grimoire/1/'+membershipId, function(error, response, body){
