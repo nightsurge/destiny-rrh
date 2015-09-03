@@ -96,7 +96,7 @@ var parseSlackMessage = function(trimmedMessage, channel, user){
           var numbers = ["3", "4", "7","3", "4", "7","3", "4", "7"];
           var letters = ["X", "C", "K", "F", "H", "L"];
           for(var i=0; i<2; i++){
-            var quest = letters.sample(2) + numbers.sample(6);
+            var quest = letters.sample(2).concat(numbers.sample(6));
             shuffle(quest);
             codes.push(quest.join(""));
           }
