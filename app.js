@@ -1,5 +1,6 @@
 var express = require('express');
 var request = require('request');
+var async = require('async');
 var Slack = require('slack-client');
 var shuffle = require('shuffle-array');
 Array.prototype.sample = require('array-sample');
@@ -157,14 +158,18 @@ slack.login();
 
 //-------------------------------------------------------------------
 //-------------------------------------------------------------------
+var getMembershipIdByGamertag = function(gamertag){
+  request.get(options.url+'/SearchDestinyPlayer/1/'+gamertag, function(error, response, body){
+    return JSON.parse(response.body);
+  });
+};
+
 app.get('/', function (req, res) {
   res.send('Hello World!');
 });
 
 app.get('/guardian/:gamertag', function (req, res) {
-  request.get(options.url+'/SearchDestinyPlayer/1/'+req.params.gamertag, function(error, response, body){
-    res.send(JSON.parse(response.body));
-  });
+  res.send(getMembershipIdByGamertag(req.params.gamertag));
 });
 
 app.get('/guardian/:gamertag/grimoire', function (req, res) {
