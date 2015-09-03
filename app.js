@@ -109,7 +109,7 @@ var parseSlackMessage = function(trimmedMessage, channel, user){
               hanPlayed = 'By the beard of Zeus (or Pocket Dave)! Han has finally played Destiny. Let us dance! http://xboxdvr.com/gamer/Tufo/video/8494678#t=9';
             }
             channel.send(hasPlayed);
-          }
+          });
           break;
         case 'destiny code':
           var codes = [];
