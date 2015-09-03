@@ -100,7 +100,7 @@ var parseSlackMessage = function(trimmedMessage, channel, user){
             shuffle(quest);
             codes.push(quest.join(""));
           }
-          channel.send('Did someone say Destiny Codes?! Here\'s 3 for FREE: '+ codes.join("\n"));
+          channel.send('Did someone say Destiny Codes?! Here\'s 3 for FREE: \n'+ codes.join("\n"));
           break;
         default:
           channel.send(user.real_name + ' said, "' + trimmedMessage + '" and I\'m too dumb to handle that.');
