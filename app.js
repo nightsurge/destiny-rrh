@@ -1,6 +1,8 @@
 var express = require('express');
 var request = require('request');
 var Slack = require('slack-client');
+var shuffle = require('shuffle-array');
+Array.prototype.sample = require('array-sample');
 var app = express();
 var token = 'xoxb-10023260468-Ye69IQtL8pCJNlSOJGbUysKa';
 var slack = new Slack(token, true, true);
@@ -37,10 +39,11 @@ var getOnlineHumansForChannel = function(channel) {
 };
 
 var parseSlackMessage = function(trimmedMessage, channel, user){
-  var keywords = ["help","characters","grimoire","inventory"];
-  var finalMessage = '';
+  var keywords = ["help","characters","grimoire","inventory","destiny code"];
+  var somethingWorked = false;
   keywords.forEach(function(key){
     if (trimmedMessage.indexOf(key) >= 0){
+      somethingWorked = true;
       switch(key){
         case 'help':
           channel.send(user.real_name + ', what would you like to know? I can currently assist you with:\n1. Character list\n2. Grimoire score\n3. Inventory list (soon)\n\n'+
@@ -87,12 +90,30 @@ var parseSlackMessage = function(trimmedMessage, channel, user){
           //   });
           // });
           break;
+
+        case 'destiny code':
+          var codes = '';
+          var numbers = ["3", "4", "7","3", "4", "7","3", "4", "7"];
+          var letters = ["X", "C", "K", "F", "H", "L"];
+          for(var i=0; i<2; i++){
+            var quest = [];
+            quest.push(letters.sample(2));
+            quest.push(numbers.sample(6));
+            shuffle(quest);
+            codes = codes + ', ' + quest.join("");
+          }
+          channel.send('Did someone say Destiny Codes?! Here\'s 3 for FREE: '+ codes);
+          break;
         default:
           channel.send(user.real_name + ' said, "' + trimmedMessage + '" and I\'m too dumb to handle that.');
           break;
       }
     }
   });
+
+  if (!somethingWorked) {
+    channel.send(user.real_name + ' said, "' + trimmedMessage + '" and I\'m too dumb to handle that.');
+  }
 };
 
 slack.on('open', function () {
