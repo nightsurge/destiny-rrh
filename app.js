@@ -64,8 +64,8 @@ var parseSlackMessage = function(trimmedMessage, channel, user){
           break;
         case 'characters':
           var gamertag = getGamertag(trimmedMessage);
-          request.get(options.url+'/SearchDestinyPlayer/1/'+gamertag, function(error, response, body){
-            var membershipId = JSON.parse(response.body).Response[0].membershipId;
+          getMembershipIdByGamertag(req.params.gamertag, function(result){
+            var membershipId = JSON.parse(result).Response[0].membershipId;
             request.get(options.url+'/1/Account/'+membershipId+'/Summary', function(error, response, body){
               var characters = JSON.parse(response.body).Response.data.characters.map( function(k){
                 return {
@@ -81,8 +81,8 @@ var parseSlackMessage = function(trimmedMessage, channel, user){
           break;
         case 'grimoire':
           var gamertag = getGamertag(trimmedMessage);
-          request.get(options.url+'/SearchDestinyPlayer/1/'+gamertag, function(error, response, body){
-            var membershipId = JSON.parse(response.body).Response[0].membershipId;
+          getMembershipIdByGamertag(req.params.gamertag, function(result){
+            var membershipId = JSON.parse(result).Response[0].membershipId;
             request.get(options.url+'/Vanguard/Grimoire/1/'+membershipId, function(error, response, body){
               var grimoireScore = JSON.parse(response.body).Response.data.score;
               channel.send(gamertag + "\'s grimoire score is: " + grimoireScore);
@@ -169,26 +169,25 @@ slack.login();
 
 //-------------------------------------------------------------------
 //-------------------------------------------------------------------
-var getMembershipIdByGamertag = function(gamertag){
+var getMembershipIdByGamertag = function(gamertag, callback){
   var membershipId;
-  async.series([
-    function() {
-      redisClient.get("membership_id_"+gamertag, function (err, reply) {
-        if (reply){
-          membershipId = reply.toString();
-        }
-      });
-    },
-    function() {
-      if(!!membershipId){
-        return membershipId;
-      } else {
-        request.get(options.url+'/SearchDestinyPlayer/1/'+gamertag, function(error, response, body){
-          return JSON.parse(response.body);
-        });
-      }
+  redisClient.get("membership_id_"+gamertag, function (err, reply) {
+    console.log("Error: "+ err + "\nReply: "+ reply);
+    if (reply){
+      membershipId = reply.toString();
     }
-  ]);
+    if(!(!!membershipId)){
+      request.get(options.url+'/SearchDestinyPlayer/1/'+gamertag, function(error, response, body){
+        membershipId = JSON.parse(response.body);
+        redisClient.set("membership_id_"+gamertag, JSON.stringify(membershipId), function(err, reply){
+          console.log("Error: "+ err + "\nReply: "+ reply);
+          callback(reply.toString());
+        });
+      });
+    } else {
+      callback(membershipId);
+    }
+  });
 };
 
 app.get('/', function (req, res) {
@@ -197,23 +196,15 @@ app.get('/', function (req, res) {
 
 app.get('/guardian/:gamertag', function (req, res) {
   var membershipId;
-  async.series([
-    function(){
-      membershipId = getMembershipIdByGamertag(req.params.gamertag);
-    },
-    function(){
-      res.send(membershipId);
-    }
-  ]);
+  getMembershipIdByGamertag(req.params.gamertag, function(result){
+    res.send(result);
+  });
 });
 
 app.get('/guardian/:gamertag/grimoire', function (req, res) {
   var membershipId = '';
-  async.series([
-
-  ]);
-  request.get(options.url+'/SearchDestinyPlayer/1/'+req.params.gamertag, function(error, response, body){
-    membershipId = JSON.parse(response.body).Response[0].membershipId;
+  getMembershipIdByGamertag(req.params.gamertag, function(result){
+    membershipId = JSON.parse(result).Response[0].membershipId;
     request.get(options.url+'/Vanguard/Grimoire/1/'+membershipId, function(error, response, body){
       var grimoireScore = JSON.parse(response.body).Response.data.score;
       res.send("Your score is: "+grimoireScore);
