@@ -1,15 +1,23 @@
 var express = require('express');
 var request = require('request');
 var async = require('async');
-var redis = require("redis"),
-    redisClient = redis.createClient();
+
+// redis
+var redis = require("redis");
+var url = require('url');
+var redisURL = url.parse(process.env.REDISCLOUD_URL);
+var redisClient = redis.createClient(redisURL.port, redisURL.hostname, {no_ready_check: true});
+client.auth(redisURL.auth.split(":")[1]);
+
+// slack
 var Slack = require('slack-client');
-var shuffle = require('shuffle-array');
-Array.prototype.sample = require('array-sample');
-var app = express();
 var token = 'xoxb-10023260468-Ye69IQtL8pCJNlSOJGbUysKa';
 var slack = new Slack(token, true, true);
 var slackIncomingToken = 'YCQTpcBsvWVdoUXgvMKlWz48';
+
+// destiny code stuff
+var shuffle = require('shuffle-array');
+Array.prototype.sample = require('array-sample');
 var options = {
   url: 'http://www.bungie.net/Platform/Destiny',
   headers: {
@@ -17,6 +25,7 @@ var options = {
   }
 };
 var guardianClasses = {'671679327': 'Hunter','2271682572': 'Warlock','3655393761': 'Titan'};
+var app = express();
 
 var makeMention = function(userId) {
   return '<@' + userId + '>';
