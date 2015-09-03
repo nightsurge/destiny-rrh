@@ -92,15 +92,13 @@ var parseSlackMessage = function(trimmedMessage, channel, user){
           break;
 
         case 'destiny code':
-          var codes = '';
+          var codes = [];
           var numbers = ["3", "4", "7","3", "4", "7","3", "4", "7"];
           var letters = ["X", "C", "K", "F", "H", "L"];
           for(var i=0; i<2; i++){
-            var quest = [];
-            quest.push(letters.sample(2));
-            quest.push(numbers.sample(6));
+            var quest = letters.sample(2) + numbers.sample(6);
             shuffle(quest);
-            codes = codes + ', ' + quest.join("");
+            codes.push(quest.join(""));
           }
           channel.send('Did someone say Destiny Codes?! Here\'s 3 for FREE: '+ codes);
           break;
