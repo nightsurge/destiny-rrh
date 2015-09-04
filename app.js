@@ -197,6 +197,8 @@ var getMembershipIdByGamertag = function(gamertag, callback){
         membershipId = JSON.parse(response.body);
         redisClient.set("membership_id_"+gamertag, JSON.stringify(membershipId), function(err, reply){
           // console.log("Error: "+ err + "\nReply: "+ reply);
+
+          redisClient.expire("membership_id_"+gamertag, 300);
           callback(membershipId);
         });
       });
