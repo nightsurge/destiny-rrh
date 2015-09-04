@@ -72,8 +72,8 @@ var parseSlackMessage = function(trimmedMessage, channel, user){
                   id: k.characterBase.characterId,
                   classType: guardianClasses[k.characterBase.classHash],
                   level: k.characterLevel,
-                  emblem: 'http://www.bungie.net/'+k.emblemPath,
-                  background: 'http://www.bungie.net/'+k.backgroundPath};
+                  emblem: 'http://www.bungie.net'+k.emblemPath,
+                  background: 'http://www.bungie.net'+k.backgroundPath};
               } );
               channel.send(gamertag + "\'s characters are: " + JSON.stringify(characters));
             });
@@ -105,12 +105,12 @@ var parseSlackMessage = function(trimmedMessage, channel, user){
         case 'has han':
           getMembershipIdByGamertag('Vermillion33', function(result){
             var hanPlayed = 'Unfortunatley, no, Han has not graced Destiny with his presence.';
-            console.log(JSON.parse(result));
-            console.log(JSON.parse(result).Response);
+            // console.log(JSON.parse(result));
             // console.log(JSON.parse(result).Response);
-            if (JSON.parse(result).Response.length){
-              hanPlayed = 'By the beard of Zeus (or Pocket Dave)! Han has finally played Destiny. Let us dance! http://xboxdvr.com/gamer/Tufo/video/8494678#t=9';
-            }
+            // console.log(JSON.parse(result).Response);
+            // if (JSON.parse(result).Response.length){
+              // hanPlayed = 'By the beard of Zeus (or Pocket Dave)! Han has finally played Destiny. Let us dance! http://xboxdvr.com/gamer/Tufo/video/8494678#t=9';
+            // }
             channel.send(hasPlayed);
           });
           break;
@@ -126,14 +126,14 @@ var parseSlackMessage = function(trimmedMessage, channel, user){
           channel.send('Did someone say Destiny Codes?! Here\'s 3 for FREE: \n'+ codes.join("\n"));
           break;
         default:
-          channel.send(user.real_name + ' said, "' + trimmedMessage + '" and I\'m too dumb to handle that.');
+          channel.send("I'm sorry, "+user.real_name+"I'm too dumb to handle '"+ trimmedMessage+"'");
           break;
       }
     }
   });
 
   if (!somethingWorked) {
-    channel.send(user.real_name + ' said, "' + trimmedMessage + '" and I\'m too dumb to handle that.');
+    channel.send("I'm sorry, "+user.real_name+"I'm too dumb to handle '"+ trimmedMessage+"'");
   }
 };
 
