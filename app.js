@@ -58,7 +58,7 @@ var parseSlackMessage = function(trimmedMessage, channel, user){
       somethingWorked = true;
       switch(key){
         case 'help':
-          channel.send(user.real_name + ', what would you like to know? I can currently assist you with:\n1. Character list\n2. Grimoire score\n3. Destiny codes\n4. Has Han played yet\n5. Inventory list (soon)\n\n'+
+          channel.send(user.name + ', what would you like to know? I can currently assist you with:\n1. Character list\n2. Grimoire score\n3. Destiny codes\n4. Has Han played yet\n5. Inventory list (soon)\n\n'+
             'Make a call using a keyword and the gamertag in brackets.\nExample: What\'s [NightSurgeX2]\'s grimoire score? (grimoire is the keyword)\n'+
             'Example Response: NightSurgeX2\'s grimoire score is 2450\n\nKeywords: ["characters","grimoire","destiny code","has han","inventory"]');
           break;
@@ -131,14 +131,14 @@ var parseSlackMessage = function(trimmedMessage, channel, user){
           channel.send('Did someone say Destiny Codes?! Here\'s 3 for FREE: \n'+ codes.join("\n"));
           break;
         default:
-          channel.send("I'm sorry, "+user.real_name+"I'm too dumb to handle '"+ trimmedMessage+"'");
+          channel.send("I'm sorry, "+user.name+", I'm too dumb to handle '"+ trimmedMessage+"'");
           break;
       }
     }
   });
 
   if (!somethingWorked) {
-    channel.send("I'm sorry, "+user.real_name+"I'm too dumb to handle '"+ trimmedMessage+"'");
+    channel.send("I'm sorry, "+user.name+", I'm too dumb to handle '"+ trimmedMessage+"'");
   }
 };
 
