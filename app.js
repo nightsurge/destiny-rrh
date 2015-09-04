@@ -64,7 +64,7 @@ var parseSlackMessage = function(trimmedMessage, channel, user){
           break;
         case 'characters':
           var gamertag = getGamertag(trimmedMessage);
-          getMembershipIdByGamertag(req.params.gamertag, function(result){
+          getMembershipIdByGamertag(gamertag, function(result){
             if (JSON.parse(result).Response.length){
               var membershipId = JSON.parse(result).Response[0].membershipId;
               request.get(options.url+'/1/Account/'+membershipId+'/Summary', function(error, response, body){
@@ -85,7 +85,7 @@ var parseSlackMessage = function(trimmedMessage, channel, user){
           break;
         case 'grimoire':
           var gamertag = getGamertag(trimmedMessage);
-          getMembershipIdByGamertag(req.params.gamertag, function(result){
+          getMembershipIdByGamertag(gamertag, function(result){
             if (JSON.parse(result).Response.length){
               var membershipId = JSON.parse(result).Response[0].membershipId;
               request.get(options.url+'/Vanguard/Grimoire/1/'+membershipId, function(error, response, body){
