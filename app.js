@@ -65,28 +65,36 @@ var parseSlackMessage = function(trimmedMessage, channel, user){
         case 'characters':
           var gamertag = getGamertag(trimmedMessage);
           getMembershipIdByGamertag(req.params.gamertag, function(result){
-            var membershipId = JSON.parse(result).Response[0].membershipId;
-            request.get(options.url+'/1/Account/'+membershipId+'/Summary', function(error, response, body){
-              var characters = JSON.parse(response.body).Response.data.characters.map( function(k){
-                return {
-                  id: k.characterBase.characterId,
-                  classType: guardianClasses[k.characterBase.classHash],
-                  level: k.characterLevel,
-                  emblem: 'http://www.bungie.net'+k.emblemPath,
-                  background: 'http://www.bungie.net'+k.backgroundPath};
-              } );
-              channel.send(gamertag + "\'s characters are: " + JSON.stringify(characters));
-            });
+            if (JSON.parse(result).Response.length){
+              var membershipId = JSON.parse(result).Response[0].membershipId;
+              request.get(options.url+'/1/Account/'+membershipId+'/Summary', function(error, response, body){
+                var characters = JSON.parse(response.body).Response.data.characters.map( function(k){
+                  return {
+                    id: k.characterBase.characterId,
+                    classType: guardianClasses[k.characterBase.classHash],
+                    level: k.characterLevel,
+                    emblem: 'http://www.bungie.net'+k.emblemPath,
+                    background: 'http://www.bungie.net'+k.backgroundPath};
+                } );
+                channel.send(gamertag + "\'s characters are: " + JSON.stringify(characters));
+              });
+            } else {
+              channel.send("It looks like "+gamertag+" doesn't have any characters (or Destiny account, for that matter).");
+            }
           });
           break;
         case 'grimoire':
           var gamertag = getGamertag(trimmedMessage);
           getMembershipIdByGamertag(req.params.gamertag, function(result){
-            var membershipId = JSON.parse(result).Response[0].membershipId;
-            request.get(options.url+'/Vanguard/Grimoire/1/'+membershipId, function(error, response, body){
-              var grimoireScore = JSON.parse(response.body).Response.data.score;
-              channel.send(gamertag + "\'s grimoire score is: " + grimoireScore);
-            });
+            if (JSON.parse(result).Response.length){
+              var membershipId = JSON.parse(result).Response[0].membershipId;
+              request.get(options.url+'/Vanguard/Grimoire/1/'+membershipId, function(error, response, body){
+                var grimoireScore = JSON.parse(response.body).Response.data.score;
+                channel.send(gamertag + "\'s grimoire score is: " + grimoireScore);
+              });
+            } else {
+              channel.send("It looks like "+gamertag+" doesn't have any grimoire (or Destiny account, for that matter).");
+            }
           });
           break;
         case 'inventory':
