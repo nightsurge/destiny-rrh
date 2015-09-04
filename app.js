@@ -105,7 +105,7 @@ var parseSlackMessage = function(trimmedMessage, channel, user){
         case 'has han':
           getMembershipIdByGamertag('Vermillion33', function(result){
             var hanPlayed = 'Unfortunatley, no, Han has not graced Destiny with his presence.';
-            console.log(JSON.parse(result));
+            console.log(result);
             // console.log(JSON.parse(result).Response);
             // console.log(JSON.parse(result).Response);
             // if (JSON.parse(result).Response.length){
