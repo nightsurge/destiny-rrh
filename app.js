@@ -108,9 +108,9 @@ var parseSlackMessage = function(trimmedMessage, channel, user){
             console.log(result);
             // console.log(JSON.parse(result).Response);
             // console.log(JSON.parse(result).Response);
-            // if (JSON.parse(result).Response.length){
-              // hanPlayed = 'By the beard of Zeus (or Pocket Dave)! Han has finally played Destiny. Let us dance! http://xboxdvr.com/gamer/Tufo/video/8494678#t=9';
-            // }
+            if (JSON.parse(result).Response.length){
+              hanPlayed = 'By the beard of Zeus (or Pocket Dave)! Han has finally played Destiny. Let us dance! http://xboxdvr.com/gamer/Tufo/video/8494678#t=9';
+            }
             channel.send(hanPlayed);
           });
           break;
@@ -215,11 +215,15 @@ app.get('/guardian/:gamertag', function (req, res) {
 app.get('/guardian/:gamertag/grimoire', function (req, res) {
   var membershipId = '';
   getMembershipIdByGamertag(req.params.gamertag, function(result){
-    membershipId = JSON.parse(result).Response[0].membershipId;
-    request.get(options.url+'/Vanguard/Grimoire/1/'+membershipId, function(error, response, body){
-      var grimoireScore = JSON.parse(response.body).Response.data.score;
-      res.send("Your score is: "+grimoireScore);
-    });
+    if (JSON.parse(result).Response.length){
+      membershipId = JSON.parse(result).Response[0].membershipId;
+      request.get(options.url+'/Vanguard/Grimoire/1/'+membershipId, function(error, response, body){
+        var grimoireScore = JSON.parse(response.body).Response.data.score;
+        res.send("Your score is: "+grimoireScore);
+      });
+    } else {
+      res.send("It looks like "+req.params.gamertag+" doesn't have any grimoire (or Destiny account, for that matter).");
+    }
   });
 });
 
