@@ -7,7 +7,7 @@ var redis = require("redis");
 var url = require('url');
 var redisURL = url.parse(process.env.REDISCLOUD_URL);
 var redisClient = redis.createClient(redisURL.port, redisURL.hostname, {no_ready_check: true});
-// redisClient.auth(redisURL.auth.split(":")[1]);
+redisClient.auth(redisURL.auth.split(":")[1]);
 
 // slack
 var Slack = require('slack-client');
