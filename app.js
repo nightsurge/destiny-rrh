@@ -58,7 +58,7 @@ var parseSlackMessage = function(trimmedMessage, channel, user){
       somethingWorked = true;
       switch(key){
         case 'help':
-          channel.send(user.real_name + ', what would you like to know? I can currently assist you with:\n1. Character list\n2. Grimoire score\n3. Inventory list (soon)\n\n'+
+          channel.send(user.real_name + ', what would you like to know? I can currently assist you with:\n1. Character list\n2. Grimoire score\n3. Destiny codes\n4. Has Han played yet\n5. Inventory list (soon)\n\n'+
             'Make a call using a keyword and the gamertag in brackets.\nExample: What\'s [NightSurgeX2]\'s grimoire score? (grimoire is the keyword)\n'+
             'Example Response: NightSurgeX2\'s grimoire score is 2450\n\nKeywords: ["characters","grimoire","destiny code","has han","inventory"]');
           break;
