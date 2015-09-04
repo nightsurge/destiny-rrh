@@ -113,10 +113,7 @@ var parseSlackMessage = function(trimmedMessage, channel, user){
         case 'has han':
           getMembershipIdByGamertag('Vermillion33', function(result){
             var hanPlayed = 'Unfortunatley, no, Han has not graced Destiny with his presence.';
-            console.log(result);
-            // console.log(JSON.parse(result).Response);
-            // console.log(JSON.parse(result).Response);
-            if (JSON.parse(result).Response.length){
+            if (result.Response.length){
               hanPlayed = 'By the beard of Zeus (or Pocket Dave)! Han has finally played Destiny. Let us dance! http://xboxdvr.com/gamer/Tufo/video/8494678#t=9';
             }
             channel.send(hanPlayed);
