@@ -65,8 +65,8 @@ var parseSlackMessage = function(trimmedMessage, channel, user){
         case 'characters':
           var gamertag = getGamertag(trimmedMessage);
           getMembershipIdByGamertag(gamertag, function(result){
-            if (JSON.parse(result).Response.length){
-              var membershipId = JSON.parse(result).Response[0].membershipId;
+            if (result.Response.length){
+              var membershipId = result.Response[0].membershipId;
               request.get(options.url+'/1/Account/'+membershipId+'/Summary', function(error, response, body){
                 var characters = JSON.parse(response.body).Response.data.characters.map( function(k){
                   return {
@@ -86,8 +86,8 @@ var parseSlackMessage = function(trimmedMessage, channel, user){
         case 'grimoire':
           var gamertag = getGamertag(trimmedMessage);
           getMembershipIdByGamertag(gamertag, function(result){
-            if (JSON.parse(result).Response.length){
-              var membershipId = JSON.parse(result).Response[0].membershipId;
+            if (result.Response.length){
+              var membershipId = result.Response[0].membershipId;
               request.get(options.url+'/Vanguard/Grimoire/1/'+membershipId, function(error, response, body){
                 var grimoireScore = JSON.parse(response.body).Response.data.score;
                 channel.send(gamertag + "\'s grimoire score is: " + grimoireScore);
@@ -123,7 +123,7 @@ var parseSlackMessage = function(trimmedMessage, channel, user){
           var codes = [];
           var numbers = ["3", "4", "7","3", "4", "7","3", "4", "7"];
           var letters = ["X", "C", "K", "F", "H", "L"];
-          for(var i=0; i<3; i++){
+          for(var i=0; i<5; i++){
             var quest = letters.sample(2).concat(numbers.sample(6));
             shuffle(quest);
             codes.push(quest.join(""));
