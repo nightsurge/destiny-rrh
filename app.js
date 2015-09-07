@@ -51,7 +51,7 @@ var getOnlineHumansForChannel = function(channel) {
 };
 
 var parseSlackMessage = function(trimmedMessage, channel, user){
-  var keywords = ["help","characters","grimoire","inventory","destiny code","has han"];
+  var keywords = ["help","characters","grimoire","inventory","destiny code","redbull code","has han"];
   var somethingWorked = false;
   keywords.forEach(function(key){
     if (trimmedMessage.toLowerCase().indexOf(key) >= 0){
@@ -60,7 +60,7 @@ var parseSlackMessage = function(trimmedMessage, channel, user){
         case 'help':
           channel.send(user.name + ', what would you like to know? I can currently assist you with:\n1. Character list\n2. Grimoire score\n3. Destiny codes\n4. Has Han played yet\n5. Inventory list (soon)\n\n'+
             'Make a call using a keyword and the gamertag in brackets.\nExample: What\'s [NightSurgeX2]\'s grimoire score? (grimoire is the keyword)\n'+
-            'Example Response: NightSurgeX2\'s grimoire score is 2450\n\nKeywords: ["characters","grimoire","destiny code","has han","inventory"]');
+            'Example Response: NightSurgeX2\'s grimoire score is 2450\n\nKeywords: ["characters","grimoire","redbull code","destiny code","has han","inventory"]');
           break;
         case 'characters':
           var gamertag = getGamertag(trimmedMessage);
@@ -120,10 +120,11 @@ var parseSlackMessage = function(trimmedMessage, channel, user){
           });
           break;
         case 'destiny code':
+        case 'redbull code'
           var codes = [];
           var numbers = ["3", "4", "7","3", "4", "7","3", "4", "7"];
-          var letters = ["X", "C", "K", "F", "H", "L"];
-          for(var i=0; i<5; i++){
+          var letters = ["C", "K", "F", "H", "L"];
+          for(var i=0; i<10; i++){
             var quest = letters.sample(2).concat(numbers.sample(6));
             shuffle(quest);
             codes.push(quest.join(""));
