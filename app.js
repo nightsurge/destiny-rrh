@@ -120,7 +120,7 @@ var parseSlackMessage = function(trimmedMessage, channel, user){
           });
           break;
         case 'destiny code':
-        case 'redbull code'
+        case 'redbull code':
           var codes = [];
           var numbers = ["3", "4", "7","3", "4", "7","3", "4", "7"];
           var letters = ["C", "K", "F", "H", "L"];
