@@ -19,7 +19,7 @@ var slackIncomingToken = 'YCQTpcBsvWVdoUXgvMKlWz48';
 var shuffle = require('shuffle-array');
 Array.prototype.sample = require('array-sample');
 var getHeaders = function(url) {
-  return = {
+  return {
     url: 'http://www.bungie.net/Platform/Destiny'+url,
     headers: {
       'X-API-Key': '607f90a5823649b0b3781df292ae5181'
