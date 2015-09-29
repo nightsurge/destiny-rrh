@@ -18,11 +18,13 @@ var slackIncomingToken = 'YCQTpcBsvWVdoUXgvMKlWz48';
 // destiny code stuff
 var shuffle = require('shuffle-array');
 Array.prototype.sample = require('array-sample');
-var options = {
-  url: 'http://www.bungie.net/Platform/Destiny',
-  headers: {
-    'X-API-Key': '607f90a5823649b0b3781df292ae5181'
-  }
+var getHeaders = function(url) {
+  return = {
+    url: 'http://www.bungie.net/Platform/Destiny'+url,
+    headers: {
+      'X-API-Key': '607f90a5823649b0b3781df292ae5181'
+    }
+  };
 };
 var guardianClasses = {'671679327': 'Hunter','2271682572': 'Warlock','3655393761': 'Titan'};
 var app = express();
@@ -67,7 +69,7 @@ var parseSlackMessage = function(trimmedMessage, channel, user){
           getMembershipIdByGamertag(gamertag, function(result){
             if (result.Response.length){
               var membershipId = result.Response[0].membershipId;
-              request.get(options.url+'/1/Account/'+membershipId+'/Summary', function(error, response, body){
+              request.get(getHeaders('/1/Account/'+membershipId+'/Summary'), function(error, response, body){
                 var characters = JSON.parse(response.body).Response.data.characters.map( function(k){
                   return {
                     id: k.characterBase.characterId,
@@ -88,7 +90,7 @@ var parseSlackMessage = function(trimmedMessage, channel, user){
           getMembershipIdByGamertag(gamertag, function(result){
             if (result.Response.length){
               var membershipId = result.Response[0].membershipId;
-              request.get(options.url+'/Vanguard/Grimoire/1/'+membershipId, function(error, response, body){
+              request.get(getHeaders('/Vanguard/Grimoire/1/'+membershipId), function(error, response, body){
                 var grimoireScore = JSON.parse(response.body).Response.data.score;
                 channel.send(gamertag + "\'s grimoire score is: " + grimoireScore);
               });
@@ -100,9 +102,9 @@ var parseSlackMessage = function(trimmedMessage, channel, user){
         case 'inventory':
           channel.send('Inventory is still a work in progress.');
           // var gamertag = getGamertag(trimmedMessage);
-          // request.get(options.url+'/SearchDestinyPlayer/1/'+gamertag, function(error, response, body){
+          // request.get(getHeaders('/SearchDestinyPlayer/1/'+gamertag), function(error, response, body){
           //   var membershipId = JSON.parse(response.body).Response[0].membershipId;
-          //   request.get(options.url+'/1/Account/'+membershipId+'/Summary', function(error, response, body){
+          //   request.get(getHeaders('/1/Account/'+membershipId+'/Summary'), function(error, response, body){
           //     var characters = JSON.parse(response.body).Response.data.characters.map( function(k){
           //       return {id: k.characterBase.characterId, emblem: 'http://www.bungie.net/'+k.emblemPath, background: 'http://www.bungie.net/'+k.backgroundPath};
           //     } );
@@ -194,7 +196,7 @@ var getMembershipIdByGamertag = function(gamertag, callback){
       membershipId = reply.toString();
     }
     if(!(!!membershipId)){
-      request.get(options.url+'/SearchDestinyPlayer/1/'+gamertag, function(error, response, body){
+      request.get(getHeaders('/SearchDestinyPlayer/1/'+gamertag), function(error, response, body){
         membershipId = JSON.parse(response.body);
         redisClient.set("membership_id_"+gamertag, JSON.stringify(membershipId), function(err, reply){
           // console.log("Error: "+ err + "\nReply: "+ reply);
@@ -225,7 +227,7 @@ app.get('/guardian/:gamertag/grimoire', function (req, res) {
   getMembershipIdByGamertag(req.params.gamertag, function(result){
     if (JSON.parse(result).Response.length){
       membershipId = JSON.parse(result).Response[0].membershipId;
-      request.get(options.url+'/Vanguard/Grimoire/1/'+membershipId, function(error, response, body){
+      request.get(getHeaders('/Vanguard/Grimoire/1/'+membershipId), function(error, response, body){
         var grimoireScore = JSON.parse(response.body).Response.data.score;
         res.send("Your score is: "+grimoireScore);
       });
